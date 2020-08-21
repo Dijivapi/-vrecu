@@ -16,20 +16,16 @@ app.set('views', 'views');
 
 app.get("/", async(req, res) => {
     const name = req.query.name;
-
-    let visitor;
-    if (!name || name.trim().length === 0) {
-        visitor = new Visitor({ name: "Anónimo", count: 1 });
-    } else {
-        visitor = await Visitor.findOne({ name: name });
+    let visitor = new Visitor({ name: "Anónimo", count: 1 });
+    if (name) {
+        visitor = await Visitor.findOne({ name });
         if (!visitor) {
-            visitor = new Visitor({ name: name, count: 1 });
+            visitor = new Visitor({ name, count: 1 });
         } else {
             visitor.count += 1;
         }
     }
     await visitor.save();
-
     const visitors = await Visitor.find();
     res.render("index", { visitors: visitors })
 });
